@@ -3,28 +3,37 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trust_zone/features/home/home/presentation/views/widgets/custom_error_widget.dart';
 
-
 import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../injection_container.dart';
-import '../../domain/entities/profile_entity.dart';
 import '../manager/profile_cubit/profile_cubit.dart';
 
-
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return 
-    BlocProvider(
-    create: (context) => sl<ProfileCubit>()..fetchUserProfile(),
+  State<ProfileView> createState() => _ProfileViewState();
+}
 
-      child: 
-      Scaffold(
+class _ProfileViewState extends State<ProfileView> {
+  late final ProfileCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = sl<ProfileCubit>()..fetchUserProfile();
+  }
+
+  String? uploadedImageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: _cubit,
+      child: Scaffold(
         appBar: AppBar(
           leading: const BackButton(),
           centerTitle: true,
-          title:  Text(AppLocalizations.of(context).profile),
+          title: Text(AppLocalizations.of(context).profile),
         ),
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
@@ -34,21 +43,37 @@ class ProfileView extends StatelessWidget {
               return CustomErrorWidget(message: state.message);
             } else if (state is ProfileLoaded) {
               final profile = state.profile;
-
               return Column(
                 children: [
                   const SizedBox(height: 20),
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: profile.profilePictureUrl != null
-                        ? NetworkImage(profile.profilePictureUrl!)
+                    backgroundImage: uploadedImageUrl != null
+                        ? NetworkImage(
+                            uploadedImageUrl!.contains('?')
+                                ? '${uploadedImageUrl!}&v=${DateTime.now().millisecondsSinceEpoch}'
+                                : '${uploadedImageUrl!}?v=${DateTime.now().millisecondsSinceEpoch}',
+                          )
+                        : (profile.profilePictureUrl != null
+                            ? NetworkImage(
+                                profile.profilePictureUrl!.contains('?')
+                                    ? '${profile.profilePictureUrl!}&v=${DateTime.now().millisecondsSinceEpoch}'
+                                    : '${profile.profilePictureUrl!}?v=${DateTime.now().millisecondsSinceEpoch}',
+                              )
+                            : null),
+                    child: (uploadedImageUrl == null &&
+                            profile.profilePictureUrl == null)
+                        ? const Icon(Icons.person, size: 50)
                         : null,
-                    child: profile.profilePictureUrl == null ? const Icon(Icons.person, size: 50) : null,
                   ),
                   const SizedBox(height: 20),
-                  ProfileItem(icon: Icons.person, text: profile.userName ?? 'No name'),
-                  ProfileItem(icon: Icons.email, text: profile.email ?? 'No email'),
-                  ProfileItem(icon: Icons.accessibility, text: profile.age?.toString() ?? 'No age'),
+                  ProfileItem(
+                      icon: Icons.person, text: profile.userName ?? 'No name'),
+                  ProfileItem(
+                      icon: Icons.email, text: profile.email ?? 'No email'),
+                  ProfileItem(
+                      icon: Icons.accessibility,
+                      text: profile.age?.toString() ?? 'No age'),
                   ProfileItem(
                     icon: Icons.favorite,
                     text: AppLocalizations.of(context).myFavorites,
@@ -56,7 +81,6 @@ class ProfileView extends StatelessWidget {
                       context.push('/favorites');
                     },
                   ),
-                  // مثال placeholder
                   const Spacer(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -65,21 +89,26 @@ class ProfileView extends StatelessWidget {
                       children: [
                         ElevatedButton.icon(
                           onPressed: () async {
-                        final updatedProfile = await context.push('/editProfile');
-                        if (updatedProfile != null && updatedProfile is UserProfile) {
-                        context.read<ProfileCubit>().emit(ProfileLoaded(updatedProfile));
-                          }
-                      },
-                        icon: const Icon(Icons.edit),
-                        label:  Text(AppLocalizations.of(context).edit),
+                            final result = await context.push('/editProfile');
+                            if (result != null && result is String) {
+                              setState(() {
+                                uploadedImageUrl = result;
+                              });
+                              _cubit
+                                  .fetchUserProfile(); // ممكن تسيبيه لو عايزة تحدث باقي البيانات
+                            }
+                          },
+                          icon: const Icon(Icons.edit),
+                          label: Text(AppLocalizations.of(context).edit),
                         ),
                         ElevatedButton.icon(
                           onPressed: () {
-                             context.push('/login');
+                            context.push('/login');
                           },
                           icon: const Icon(Icons.logout),
-                          label:  Text(AppLocalizations.of(context).logOut),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                          label: Text(AppLocalizations.of(context).logOut),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red),
                         ),
                       ],
                     ),
@@ -88,11 +117,12 @@ class ProfileView extends StatelessWidget {
                 ],
               );
             } else {
-              return  Center(child: Text(AppLocalizations.of(context).unexpected));
+              return Center(
+                  child: Text(AppLocalizations.of(context).unexpected));
             }
           },
         ),
-      )
+      ),
     );
   }
 }
@@ -134,4 +164,3 @@ class ProfileItem extends StatelessWidget {
     );
   }
 }
-

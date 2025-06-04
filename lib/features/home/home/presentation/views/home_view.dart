@@ -59,8 +59,7 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
-        actions: const [
-          Icon(Icons.person),
+        actions:  [
           SizedBox(width: 10),
         ],
       ),
@@ -89,7 +88,7 @@ class _HomeViewState extends State<HomeView> {
               },
             ),
           ),
-           Padding(
+          Padding(
             padding: EdgeInsets.all(12),
             child: Align(
               alignment: AlignmentDirectional.topStart,
@@ -123,7 +122,7 @@ class _HomeViewState extends State<HomeView> {
                           crossAxisCount: 2,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio: 1, // مربعات
+                          childAspectRatio: 1, 
                         ),
                         itemCount: categories.length,
                         itemBuilder: (context, index) {
@@ -243,7 +242,6 @@ class _HomeViewState extends State<HomeView> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.save), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.location_on), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: ''),
