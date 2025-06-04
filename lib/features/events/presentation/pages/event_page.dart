@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trust_zone/utils/app_strings.dart';
 import 'package:trust_zone/utils/color_managers.dart';
 import '../../../../core/localization/app_localizations.dart';
-import '../cubit/event_cubit.dart';
 import '../widgets/events_body.dart';
-
 class EventsPage extends StatelessWidget {
   const EventsPage({super.key});
 
@@ -13,7 +9,14 @@ class EventsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         backgroundColor: ColorManager.primary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         centerTitle: true,
         title: Text(
           AppLocalizations.of(context).events,

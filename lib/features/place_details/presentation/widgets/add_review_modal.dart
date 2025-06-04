@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:trust_zone/features/place_details/presentation/pages/place_details_page.dart';
 import 'package:trust_zone/utils/app_strings.dart';
 import 'package:trust_zone/utils/color_managers.dart';
-import 'package:trust_zone/utils/shared_data.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../cubit/review_cubit.dart';
 import '../cubit/review_state.dart';
@@ -40,13 +37,13 @@ class _AddReviewModalState extends State<AddReviewModal> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content:
-                    Text(AppLocalizations.of(context).reviewAddedSuccessfully)),
+                Text(AppLocalizations.of(context).reviewAddedSuccessfully)),
           );
         } else if (state is ReviewError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content:
-                    Text('${AppStrings.failedToAddReview} ${state.message}')),
+                Text('${AppStrings.failedToAddReview} ${state.message}')),
           );
         }
       },
@@ -106,12 +103,13 @@ class _AddReviewModalState extends State<AddReviewModal> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF8EC9DB),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               ),
               onPressed: () async {
                 final comment = _controller.text.trim();
@@ -119,10 +117,10 @@ class _AddReviewModalState extends State<AddReviewModal> {
                 await context
                     .read<ReviewCubit>()
                     .addReview(
-                      branchId: widget.branchId,
-                      rating: rating,
-                      comment: comment,
-                    )
+                  branchId: widget.branchId,
+                  rating: rating,
+                  comment: comment,
+                )
                     .then((val) async {
                   await context
                       .read<ReviewCubit>()
@@ -131,7 +129,7 @@ class _AddReviewModalState extends State<AddReviewModal> {
               },
               child: Text(
                 AppLocalizations.of(context).sendReview,
-                style: TextStyle(color: ColorManager.black),
+                style: TextStyle(color: ColorManager.black,fontSize: 20,fontWeight: FontWeight.bold),
               ),
             ),
           ],

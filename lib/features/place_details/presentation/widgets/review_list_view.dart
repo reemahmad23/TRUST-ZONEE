@@ -19,7 +19,7 @@ class ReviewListView extends StatelessWidget {
             itemBuilder: (context, index) {
               final review =ReviewCubit.get(context).reviews[index];
               return ReviewItem(
-               userId: review.user.id,
+                userId: review.user.id,
                 username: review.user.userName,
                 date: review.createdAt.toString(),
                 rating: review.rating,

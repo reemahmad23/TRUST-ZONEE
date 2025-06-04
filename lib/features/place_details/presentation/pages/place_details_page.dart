@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../injection_container.dart';
-import '../../../../utils/app_strings.dart';
 import '../../../../utils/color_managers.dart';
 import '../../../../utils/custom_button.dart';
 import '../cubit/place_details_cubit.dart';
@@ -32,6 +31,7 @@ class PlaceDetailsPage extends StatelessWidget {
         ),
       ],
       child: Scaffold(
+
         body: Column(
           children: [
             BlocBuilder<PlaceDetailsCubit, PlaceDetailsState>(
@@ -53,23 +53,33 @@ class PlaceDetailsPage extends StatelessWidget {
                 return const Center(child: Text("No data available"));
               },
             ),
-            const SizedBox(height: 8),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment:Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal:30),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: Text(
+
                   AppLocalizations.of(context).reviews,
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,color:ColorManager.black ),
+                  style: TextStyle(
+
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: ColorManager.primary,
+                  ),
                 ),
               ),
             ),
-            const Expanded(
-                child: ReviewListView()),
+
+
+            Expanded(
+                child: Container(
+                    color:  ColorManager.primary,
+                    child: ReviewListView())),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding:  EdgeInsets.all(16.0),
               child: CustomButton(
                 label:AppLocalizations.of(context).addReview,
+
                 onPressedAction: () {
                   showModalBottomSheet(
                     context: context,
@@ -84,7 +94,9 @@ class PlaceDetailsPage extends StatelessWidget {
                   );
                 },
                 backgroundColor: ColorManager.primary,
-                textColor: Colors.black,
+                textColor: Colors.white ,
+                height: 70,
+
               ),
             ),
           ],

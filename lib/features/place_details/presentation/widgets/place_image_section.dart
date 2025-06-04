@@ -1,8 +1,9 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:trust_zone/utils/app_strings.dart';
+import 'package:trust_zone/utils/color_managers.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/branch_photo.dart';
@@ -14,12 +15,14 @@ class PlaceImageSection extends StatelessWidget {
   final dynamic placeDetails;
   final List<BranchPhotoEntity> photos;
 
-  const PlaceImageSection({
+  PlaceImageSection({
     super.key,
     required this.branchId,
     this.placeDetails,
     required this.photos,
   });
+
+  final PageController _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,38 +32,71 @@ class PlaceImageSection extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (state is PlaceDetailsLoaded) {
           final branch = state.branchEntity;
-          final photo = photos.isNotEmpty ? photos.first.photoUrl : null;
 
           return Stack(
             children: [
-              photo != null
-                  ? Image.network(
-                photo,
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  photos.isNotEmpty
+                      ? SizedBox(
+                    height: 300,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: photos.length,
+                      itemBuilder: (context, index) {
+                        final photoUrl = photos[index].photoUrl;
+                        return Image.network(
+                          photoUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: ColorManager.primary,
+                              child: Center(
+                                child: Text(
+                                  AppLocalizations.of(context).failedToLoadImage,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(child: CircularProgressIndicator());
+                          },
+                        );
+                      },
+                    ),
+                  )
+                      : Container(
+                    height: 300,
                     width: double.infinity,
-                    height: 200,
-                    color: Colors.grey,
-                    child:  Center(child: Text(AppLocalizations.of(context).failedToLoadImage)),
-                  );
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return SizedBox(
-                    width: double.infinity,
-                    height: 200,
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                },
-              )
-                  : Container(
-                width: double.infinity,
-                height: 200,
-                color: Colors.grey,
-                child:  Center(child: Text(AppLocalizations.of(context).noImage)),
+                    color: ColorManager.primary,
+                    child: Center(
+                      child: Text(
+                        AppLocalizations.of(context).noImage,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  if (photos.length > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: SmoothPageIndicator(
+                        controller: _pageController,
+                        count: photos.length,
+                        effect: ExpandingDotsEffect(
+                          activeDotColor: ColorManager.primary,
+                          dotColor: Colors.grey.shade400,
+                          dotHeight: 8,
+                          dotWidth: 8,
+                          expansionFactor: 3,
+                          spacing: 5,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               SafeArea(
                 child: Padding(
@@ -87,6 +123,7 @@ class PlaceImageSection extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _infoRow(
+                              context: context,
                               icon: Icons.location_on,
                               label: AppLocalizations.of(context).address,
                               value: branch.address,
@@ -94,6 +131,7 @@ class PlaceImageSection extends StatelessWidget {
                             ),
                             const Divider(),
                             _infoRow(
+                              context: context,
                               icon: Icons.phone,
                               label: AppLocalizations.of(context).phone,
                               value: branch.phone,
@@ -101,6 +139,7 @@ class PlaceImageSection extends StatelessWidget {
                             ),
                             const Divider(),
                             _infoRow(
+                              context: context,
                               icon: Icons.language,
                               label: AppLocalizations.of(context).website,
                               value: branch.website,
@@ -126,18 +165,18 @@ class PlaceImageSection extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children:  [
-                        Icon(Icons.info_outline, color: Colors.white),
-                        SizedBox(width: 8),
+                      children: [
+                        const Icon(Icons.info_outline, color: Colors.white),
+                        const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context).details,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           );
         } else {
@@ -148,6 +187,7 @@ class PlaceImageSection extends StatelessWidget {
   }
 
   Widget _infoRow({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,

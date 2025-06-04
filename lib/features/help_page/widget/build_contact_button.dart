@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trust_zone/utils/color_managers.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactButton extends StatelessWidget {
@@ -21,14 +22,14 @@ class ContactButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: ColorManager.primary,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            FaIcon(icon, size: 20),
+            FaIcon(icon, size: 20,color: ColorManager.white,),
             const SizedBox(width: 20),
-            Text(label, style: const TextStyle(fontSize: 16)),
+            Text(label, style: const TextStyle(fontSize: 16,color: ColorManager.white)),
           ],
         ),
       ),
