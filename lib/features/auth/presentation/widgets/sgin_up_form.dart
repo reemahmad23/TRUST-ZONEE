@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:trust_zone/utils/app_strings.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../utils/app_styles.dart';
 import '../../../../utils/color_managers.dart';
@@ -104,8 +103,8 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
               suffixIcon:  Icon(Icons.arrow_drop_down, color: ColorManager.black),
             ),
-            style: const TextStyle(color: Colors.white),
-            dropdownColor: ColorManager.primary,
+            style: const TextStyle(color: Colors.black),
+            dropdownColor: ColorManager.white,
             iconEnabledColor: Colors.white,
             value: disabilityTypeController.text.isEmpty
                 ? null
