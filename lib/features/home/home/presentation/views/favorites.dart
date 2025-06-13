@@ -60,19 +60,25 @@ class FavoritePlacesScreen extends StatelessWidget {
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(12),
                         leading: Container(
-                          width: 60,
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF153B56),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
+  width: 60,
+  height: 60,
+  decoration: const BoxDecoration(
+    shape: BoxShape.circle,
+  ),
+  child: ClipOval(
+    child: Image.asset(
+      "assets/images/photo_2025-06-05_12-03-56.jpg",
+      fit: BoxFit.cover,
+    ),
+  ),
+),
+
                         title: Text(
                           favorite.branch.place.name.isNotEmpty
                               ? favorite.branch.place.name
                               : AppLocalizations.of(context).noNameYet,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
@@ -83,13 +89,13 @@ class FavoritePlacesScreen extends StatelessWidget {
                             Text(
                               place.details,
                               style: const TextStyle(
-                                  fontSize: 14, color: Colors.black54),
+                                  fontSize: 16, color: Colors.black54),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               favorite.branch.address,
                               style: const TextStyle(
-                                  fontSize: 14, color: Colors.black45),
+                                  fontSize: 16, color: Colors.black45),
                             ),
                           ],
                         ),

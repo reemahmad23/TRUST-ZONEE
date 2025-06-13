@@ -1,30 +1,29 @@
+import 'package:trust_zone/features/chat/chat/domain/entities/message_entity.dart';
 
-import 'package:trust_zone/features/chat/chat/data/models/message_model.dart';
+abstract class ChatState {}
 
-class ChatState {
-  final bool isLoading;
-  final List<MessageModel> messages;
-  final String? error;
+class ChatInitial extends ChatState {}
 
-  ChatState({
-    required this.isLoading,
-    required this.messages,
-    this.error,
-  });
+class ChatLoading extends ChatState {}
 
-  factory ChatState.initial() {
-    return ChatState(isLoading: false, messages: []);
-  }
+class ChatLoaded extends ChatState {
+  final List<MessageEntity> messages;
 
-  ChatState copyWith({
-    bool? isLoading,
-    List<MessageModel>? messages,
-    String? error,
-  }) {
-    return ChatState(
-      isLoading: isLoading ?? this.isLoading,
-      messages: messages ?? this.messages,
-      error: error,
-    );
-  }
+   ChatLoaded(this.messages);
+
+  @override
+  List<Object> get props => [messages];
 }
+
+
+
+class ChatError extends ChatState {
+  final String message;
+
+  ChatError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class MessageSent extends ChatState {}

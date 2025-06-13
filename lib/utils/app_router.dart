@@ -101,31 +101,6 @@ abstract class AppRouter {
         ),
       ),
 
-      GoRoute(
-        path: '/',
-        builder: (context, state) {
-          return BlocProvider(
-            create: (_) =>
-                ConversationCubit(di.sl(), di.sl())..fetchConversations(),
-            child: const MessagesScreen(),
-          );
-        },
-      ),
-GoRoute(
-  path: '/chat-screen',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>? ?? {};
-    final receiverId = extra['receiverId'] ?? '';
-
-    return BlocProvider(
-      create: (_) => di.sl<ChatCubit>(),
-      child: ChatScreen(
-        receiverId: receiverId, 
-        conversationId: '${SharedData.userId}_$receiverId',
-      ),
-    );
-  },
-),
 
 
 
@@ -181,6 +156,21 @@ GoRoute(
           );
         },
       ),
+      GoRoute(
+  path: '/chat-screen',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    return BlocProvider(
+      create: (context) => di.sl<ChatCubit>(), // أو ChatCubit(repository)
+      child: ChatScreen(
+        conversationId: extra['conversationId'],
+        receiverId: extra['receiverId'],
+        receiverName: extra['receiverName'],
+      ),
+    );
+  },
+),
+
     ],
 
     

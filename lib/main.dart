@@ -72,7 +72,7 @@ class TrustZone extends StatelessWidget {
     GlobalCupertinoLocalizations.delegate,
     ],
     builder: DevicePreview.appBuilder,
-    title: 'Flutter Clean Architecture',
+    title: 'Trust Zone',
     debugShowCheckedModeBanner: false,
     routerConfig: AppRouter.router,
     );

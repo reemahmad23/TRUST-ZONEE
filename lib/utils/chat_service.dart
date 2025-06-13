@@ -1,39 +1,29 @@
 import 'package:dio/dio.dart';
-import 'package:trust_zone/features/chat/chat/data/models/message_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatApiService {
-  final Dio _dio;
+  final Dio dio;
 
-  ChatApiService(this._dio);
-
-  Future<String> createOrGetConversation(String user2Id) async {
-    final response = await _dio.post('/api/Conversation', data: {
-      "user2Id": user2Id,
-    });
-
-    return response.data['conversationId'].toString();
+  ChatApiService(this.dio) {
+    dio.options.baseUrl = 'https://trustzone.azurewebsites.net/api';
+    dio.options.headers['accept'] = 'text/plain';
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('token');
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+    ));
   }
 
-  Future<void> sendMessage({
-    required String content,
-    required String user2Id,
-  }) async {
-    await _dio.post('/api/Message', data: {
-      "content": content,
-      "user2Id": user2Id,
-    });
+  Future<Response> get(String path) async {
+    return await dio.get(path);
   }
 
-  Future<List<MessageModel>> getMessages({
-    required String conversationId,
-    int page = 1,
-  }) async {
-    final response = await _dio.get('/api/Message/conversation/$conversationId', queryParameters: {
-      'page': page,
-    });
-
-    return (response.data as List)
-        .map((e) => MessageModel.fromJson(e))
-        .toList();
+  Future<Response> post(String path, {dynamic data}) async {
+    return await dio.post(path, data: data);
   }
 }

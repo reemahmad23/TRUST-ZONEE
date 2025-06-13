@@ -231,8 +231,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.message)),
                 );
+              
+         
               }
-  },
+            },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: SingleChildScrollView(
@@ -296,7 +298,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             ),
           ),
         ),
-          
+        
       
     ),
     );

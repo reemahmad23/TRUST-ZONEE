@@ -1,20 +1,20 @@
+// import 'package:trust_zone/features/chat/chat/data/models/conversation.dart';
+// import 'package:trust_zone/features/chat/chat/data/models/message_model.dart';
 
-import '../../../domain/entities/conversation_entity.dart';
+// abstract class ChatState {}
 
-abstract class ConversationState {}
+// class ChatInitial extends ChatState {}
 
-class ConversationInitial extends ConversationState {}
+// class ChatLoading extends ChatState {}
 
-class ConversationLoading extends ConversationState {}
+// class ChatLoaded extends ChatState {
+//   final List<MessageModel> messages;
+//   final ConversationModel conversation;
 
-class ConversationLoaded extends ConversationState {
-  final List<ConversationEntity> conversations;
+//   ChatLoaded(this.messages, this.conversation);
+// }
 
-  ConversationLoaded(this.conversations);
-}
-
-class ConversationError extends ConversationState {
-  final String message;
-
-  ConversationError(this.message);
-}
+// class ChatError extends ChatState {
+//   final String message;
+//   ChatError(this.message);
+// }

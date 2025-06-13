@@ -1,122 +1,188 @@
+import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:trust_zone/core/localization/app_localizations.dart';
+import 'package:trust_zone/features/chat/chat/presentation/managerr/message_cubit/message_cubit.dart';
+import 'package:trust_zone/features/chat/chat/presentation/managerr/message_cubit/message_state.dart';
+import 'package:intl/intl.dart';
 
-import '../../../../../core/localization/app_localizations.dart';
-import '../managerr/conversation_cubit/conversation_state.dart';
-import '../managerr/conversation_cubit/conversatoin_cubit.dart';
+class ChatScreen extends StatefulWidget {
+  final int conversationId;
+  final String receiverId;
+  final String receiverName;
+  final String receiverProfilePicture; // <<< Add this to receive image
 
-class MessagesScreen extends StatelessWidget {
-  const MessagesScreen({Key? key}) : super(key: key);
+  const ChatScreen({
+    required this.conversationId,
+    required this.receiverId,
+    required this.receiverName,
+    this.receiverProfilePicture = 'https://placehold.co/100x100', // fallback if not provided
+  });
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+      print("Conversation ID: ${widget.conversationId}");
+
+    Future.microtask(() {
+      context.read<ChatCubit>().startPolling(widget.conversationId);
+    });
+  }
+
+  @override
+  void dispose() {
+    context.read<ChatCubit>().stopPolling();
+    super.dispose();
+  }
+
+  void _sendMessage() async {
+    final content = _controller.text.trim();
+    if (content.isNotEmpty) {
+      await context.read<ChatCubit>().sendNewMessage(content, widget.receiverId,   widget.conversationId, // <<< أضفها هنا
+);
+      _controller.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final myId = widget.receiverId;
+
     return Scaffold(
       appBar: AppBar(
-        title:  Text(AppLocalizations.of(context).messages),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(),
+        title: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.receiverName, style: const TextStyle(fontSize: 20)),
+                const Text("Active Now", style: TextStyle(fontSize: 14, color: Colors.green)),
+              ],
+            ),
+          ],
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).search,
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.grey.shade200,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onChanged: (value) {
-                // ممكن تضيف فلترة هنا
-              },
-            ),
-          ),
           Expanded(
-            child: BlocBuilder<ConversationCubit, ConversationState>(
+            child: BlocBuilder<ChatCubit, ChatState>(
               builder: (context, state) {
+                if (state is ChatLoading) return const Center(child: CircularProgressIndicator());
+                if (state is ChatLoaded) {
+                  if (state.messages.isEmpty) return const Center(child: Text("لا توجد رسائل حتى الآن"));
 
-                if (state is ConversationLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is ConversationLoaded) {
-                  if (state.conversations.isEmpty) {
-                    return Center(child: Text('No conversations yet'));
-                  }
-
-                  return ListView.separated(
-                    itemCount: state.conversations.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
+                  return ListView.builder(
+                    reverse: true,
+                    padding: const EdgeInsets.all(12),
+                    itemCount: state.messages.length,
                     itemBuilder: (context, index) {
-                      final conversation = state.conversations[index];
-                      return ListTile(
-                          leading: const CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: 24,
+                      final msg = state.messages[index];
+                      final isMe = msg.senderId == myId;
+                      final time = DateFormat('h:mm a').format(msg.sentAt);
+
+                      final profileImage = msg.senderProfilePicture?.isNotEmpty == true
+                          ? msg.senderProfilePicture!
+                          : 'https://placehold.co/100x100';
+
+                      return Align(
+                        alignment: isMe ? Alignment.centerLeft : Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isMe)
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundImage: CachedNetworkImageProvider(profileImage),
+                                ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isMe ? Colors.grey[200] : Colors.blue[400],
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: const Radius.circular(20),
+                                          topRight: const Radius.circular(20),
+                                          bottomLeft: Radius.circular(isMe ? 0 : 20),
+                                          bottomRight: Radius.circular(isMe ? 20 : 0),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        msg.content,
+                                        style: TextStyle(
+                                          color: isMe ? Colors.black : Colors.white, fontSize: 18,),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      time,
+                                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              if (!isMe)
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundImage: CachedNetworkImageProvider(profileImage),
+                                ),
+                            ],
                           ),
-                          title: Text(
-                            conversation.user2Name ?? 'Unknown',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle:
-                              Text('Started at: ${conversation.createdAt}'),
-                          onTap: () {
-                            final receiverId = conversation.user2Id;
-                            final conversationId =
-                                conversation.id.toString(); // لو هو int
-                            if (receiverId.isNotEmpty &&
-                                conversationId.isNotEmpty) {
-                              context.push('/chat-screen', extra: {
-                                'conversationId': conversationId,
-                                'receiverId': receiverId,
-                              });
-                            }
-                          });
+                        ),
+                      );
                     },
                   );
-                } else if (state is ConversationError) {
-                  return Center(child: Text('${AppLocalizations.of(context).error} ${state.message}'));
-                } else {
-                  return const Center(child: Text('No conversations'));
                 }
+                return const SizedBox();
               },
             ),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final controller = TextEditingController();
-          final user2Id = await showDialog<String>(
-            context: context,
-            builder: (_) => AlertDialog(
-              title:  Text(AppLocalizations.of(context).enterUserId),
-              content: TextField(controller: controller),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, controller.text),
-                  child: Text(AppLocalizations.of(context).add),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context).sendMessage,
+                      fillColor: Colors.grey[100],
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.blue,
+                  child: IconButton(
+                    icon: const Icon(Icons.send, color: Colors.white),
+                    onPressed: _sendMessage,
+                  ),
                 ),
               ],
             ),
-          );
-
-          if (user2Id != null && user2Id.isNotEmpty) {
-            await context.read<ConversationCubit>().addConversation(user2Id);
-          }
-        },
-        child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }

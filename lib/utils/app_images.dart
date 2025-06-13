@@ -42,7 +42,7 @@ class Assets {
 
   /// Assets for imagesProfile 1
   /// assets/images/profile 1.svg
-  static const String imagesProfile1 = "assets/images/profile 1.jpg";
+  static const String imagesProfile1 = "assets/images/profile1.jpg";
 
   /// Assets for imagesUnion1
   /// assets/images/union-1.svg
@@ -51,7 +51,7 @@ class Assets {
   /// Assets for imagesVector 708
   /// assets/images/Vector 708.svg
   static const String imagesVector708 = "assets/images/Vector 708.svg";
-  static const String imagesRestaurant = "assets/images/download.png";
+  static const String imagesUrl = "";
 
 }
 

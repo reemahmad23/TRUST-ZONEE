@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:trust_zone/features/random_user1/presentation/widget/user_info_row.dart';
-import 'package:trust_zone/utils/app_strings.dart';
+import 'package:trust_zone/utils/token_helper.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../utils/color_managers.dart';
 import '../cubit/user_profile_cubit.dart';
@@ -174,57 +177,112 @@ class RandomUser1ProfileSection extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Send Message Button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/chat',
-                        arguments: {
-                          'userId': user.id,
-                          'userName': user.userName,
-                        },
-                      );
-                    },
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: ColorManager.lightBlueBackground,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: ColorManager.mintGreen),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                        context.push(
-                          '/chat-screen',
-                        extra: {
-                          'receiverId': user.id,
-                            },
-                          );
-                        },
+              Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  child: InkWell(
+   onTap: () async {
+  final receiverId = user.id;
+  final token = await TokenHelper.getToken();
+  final currentUserId = await TokenHelper.getUserId(); // ✅ استخرجنا الـ ID من التوكن
 
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.chat, color: ColorManager.primary),
-                             SizedBox(width: 8),
-                            Text(
-                              AppLocalizations.of(context).sendMessage,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: ColorManager.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+  try {
+    // ✅ استعلام كل المحادثات الخاصة باليوزر الحالي
+    final response = await http.get(
+      Uri.parse('https://trustzone.azurewebsites.net/api/Conversation/user?page=1&pageSize=100'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'accept': 'text/plain',
+      },
+    );
 
-                const SizedBox(height: 32),
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      // ✅ دور على محادثة بين الـ current user والـ receiver
+      final existingConversation = data.firstWhere(
+        (conv) =>
+            (conv['user1Id'] == currentUserId && conv['user2Id'] == receiverId) ||
+            (conv['user1Id'] == receiverId && conv['user2Id'] == currentUserId),
+        orElse: () => null,
+      );
+
+      if (existingConversation != null) {
+        final conversationId = existingConversation['id'];
+        print("📦 EXISTING Conversation ID: $conversationId");
+
+        context.push('/chat-screen', extra: {
+          'conversationId': conversationId,
+          'receiverId': receiverId,
+          'receiverName': user.userName,
+        });
+        return;
+      }
+    }
+
+    // ✅ لو مفيش محادثة، انشئ واحدة جديدة
+    final createResponse = await http.post(
+      Uri.parse('https://trustzone.azurewebsites.net/api/Conversation'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'user2Id': receiverId}),
+    );
+
+    if (createResponse.statusCode == 200 || createResponse.statusCode == 201) {
+      final data = jsonDecode(createResponse.body);
+      final conversationId = data['id'];
+
+      print("🆕 CREATED Conversation ID: $conversationId");
+
+      context.push('/chat-screen', extra: {
+        'conversationId': conversationId,
+        'receiverId': receiverId,
+        'receiverName': user.userName,
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("حدث خطأ أثناء بدء المحادثة")),
+      );
+    }
+  } catch (e) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("خطأ"),
+        content: Text("حدث خطأ غير متوقع: $e"),
+      ),
+    );
+  }
+},
+
+    borderRadius: BorderRadius.circular(16),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ColorManager.lightBlueBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: ColorManager.mintGreen),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.chat, color: ColorManager.primary),
+          const SizedBox(width: 8),
+          Text(
+            AppLocalizations.of(context).sendMessage,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: ColorManager.primary,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
+              const  SizedBox(height: 32),
               ],
             ),
           );

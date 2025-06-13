@@ -1,42 +1,36 @@
-import 'package:dio/dio.dart';
+// import 'package:trust_zone/features/chat/chat/data/models/conversation.dart';
+// import 'package:trust_zone/features/chat/chat/data/models/message_model.dart';
+// import 'package:trust_zone/utils/chat_service.dart';
 
-import '../models/conversation.dart';
+// class ChatRemoteDataSource {
+//   final ChatApiService apiService;
+//   ChatRemoteDataSource(this.apiService);
 
+//   Future<ConversationModel> getConversationBetween(String user2Id) async {
+//     final response = await apiService.get(
+//         '/api/Conversation/between?user2Id=$user2Id');
+//     return ConversationModel.fromJson(response);
+//   }
 
-abstract class ConversationRemoteDataSource {
-  Future<List<ConversationModel>> getUserConversations();
-  Future<void> createConversation(String user2Id);
-}
+//   Future<ConversationModel> createConversation(String user2Id) async {
+//     final response = await apiService.post('/api/Conversation', data: {
+//       'user2Id': user2Id,
+//     });
+//     return ConversationModel.fromJson(response);
+//   }
 
-class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
-  final Dio dio;
-  final String token;
+//   Future<List<MessageModel>> getMessages(int conversationId, int page) async {
+//     final response = await apiService.get(
+//         '/api/Message/conversation/$conversationId?page=$page');
+//     return (response as List)
+//         .map((e) => MessageModel.fromJson(e))
+//         .toList();
+//   }
 
-  ConversationRemoteDataSourceImpl(this.dio, this.token);
-
-  @override
-  Future<List<ConversationModel>> getUserConversations() async {
-    final response = await dio.get(
-      'https://trustzone.azurewebsites.net/api/Conversation/user?page=1&pageSize=20',
-      options: Options(headers: {
-        'Authorization': 'Bearer $token',
-        'accept': 'text/plain',
-      }),
-    );
-    return (response.data as List)
-        .map((json) => ConversationModel.fromJson(json))
-        .toList();
-  }
-
-  @override
-  Future<void> createConversation(String user2Id) async {
-    await dio.post(
-      'https://trustzone.azurewebsites.net/api/Conversation',
-      data: {'user2Id': user2Id},
-      options: Options(headers: {
-        'Authorization': 'Bearer $token',
-        'accept': 'text/plain',
-      }),
-    );
-  }
-}
+//   Future<void> sendMessage(String content, String user2Id) async {
+//     await apiService.post('/api/Message', data: {
+//       'content': content,
+//       'user2Id': user2Id,
+//     });
+//   }
+// }

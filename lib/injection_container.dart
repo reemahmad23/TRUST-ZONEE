@@ -2,7 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_zone/features/chat/chat/data/repos/message_repo_im.dart';
+import 'package:trust_zone/features/chat/chat/domain/repos/message_repo.dart';
 import 'package:trust_zone/features/chat/chat/domain/repos/messages_repo.dart';
+import 'package:trust_zone/features/chat/chat/domain/usecases/get_messages.dart';
+import 'package:trust_zone/features/chat/chat/domain/usecases/send_messages.dart';
 import 'package:trust_zone/features/chat/chat/presentation/managerr/message_cubit/message_cubit.dart';
 import 'package:trust_zone/features/random_user1/data/datasource/user_profile_remote_data_source.dart';
 import 'package:trust_zone/features/random_user1/data/datasource/user_profile_remote_data_source_impl.dart';
@@ -189,51 +192,17 @@ final token = prefs.getString('token');
   ));
 
 
-sl.registerLazySingleton(() => ChatApiService(sl())); 
-// Dio لازم تكون مسجلة
-sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(sl()));
-
-sl.registerFactory(() => ChatCubit(sl()));
-
-
-
-//   // Data Source
-//   sl.registerLazySingleton<ConversationRemoteDataSource>(
-//         () => ConversationRemoteDataSourceImpl(sl(), token),
-//   );
-
-// // Repository
-//   sl.registerLazySingleton<ConversationRepository>(
-//         () => ConversationRepositoryImpl(sl()),
-//   );
-
-// // Use Cases
-//   sl.registerLazySingleton(() => GetConversationsUseCase(sl()));
-//   sl.registerLazySingleton(() => CreateConversationUseCase(sl()));
-
-// // Cubit
-//   sl.registerFactory(() => ConversationCubit(
-//     sl(),
-//     sl(),
-//   ));
+  // ApiService
+  sl.registerLazySingleton(() => ChatApiService(sl()));
+  // Repositories
+  sl.registerLazySingleton<MessageRepository>(() => MessageRepositoryImpl(sl()));
+  // UseCases
+  sl.registerLazySingleton(() => GetMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+  // Cubits
+  sl.registerFactory(() => ChatCubit(sl(), sl()));
 
 
-
-
-//   sl.registerLazySingleton(() => ChatService(baseUrl: 'https://trustzone.azurewebsites.net', token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkb25pYTEyMyIsImp0aSI6IjJmNWI2MjJkLWRjNWQtNDBlZS1hZTUwLWYxMDgzOWNkNmMxNiIsIlVpZCI6IjU3NTBhNWNhLWQ4MDctNGExMC04ZDYwLTc1NDg2NmZjODcyZCIsInJvbGVzIjoiVXNlciIsImV4cCI6MTc0Nzg1Mzc4OCwiaXNzIjoiVHJ1c3Rab25lIiwiYXVkIjoiVHJ1c3Rab25lVXNlciJ9.2VzM558dhp7-ia_o3v2FevStIPg8_8hHybK2kmjDiJk"));
-  
-  
-//   sl.registerLazySingleton<MessageRepository>(
-//         () => MessageRepositoryImpl(sl()),
-//   );
-//   sl.registerLazySingleton(() => GetMessagesUseCase(sl<MessageRepository>()));
-//   sl.registerLazySingleton(() => SendMessageUseCase(sl<MessageRepository>()));
-  
-//   sl.registerFactory(() => ChatCubit(
-//     sl(),
-//     sl(),
-//   ));
-  
   
 
 

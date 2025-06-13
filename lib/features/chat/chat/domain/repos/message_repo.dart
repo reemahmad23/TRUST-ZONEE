@@ -1,7 +1,8 @@
+import 'package:trust_zone/features/chat/chat/data/models/message_model.dart';
 
-import '../entities/conversation_entity.dart';
+abstract class MessageRepository {
+  Future<List<MessageModel>> getMessages(int conversationId, int page);
+  Future<void> sendMessage(String content, String user2Id, int conversationId);
+  //Stream<List<MessageModel>> streamMessages(int conversationId);
 
-abstract class ConversationRepository {
-  Future<List<ConversationEntity>> getUserConversations();
-  Future<void> createConversation(String user2Id);
 }

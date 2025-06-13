@@ -235,18 +235,18 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.red,
-        unselectedItemColor: const Color(0xFF1B4965),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: ''),
-        ],
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   selectedItemColor: Colors.red,
+      //   unselectedItemColor: const Color(0xFF1B4965),
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onItemTapped,
+      //   items: const [
+      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+      //     BottomNavigationBarItem(icon: Icon(Icons.location_on), label: ''),
+      //     BottomNavigationBarItem(icon: Icon(Icons.smart_toy), label: ''),
+      //     BottomNavigationBarItem(icon: Icon(Icons.chat), label: ''),
+      //   ],
+      // ),
     );
   }
 }

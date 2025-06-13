@@ -47,7 +47,7 @@ class _ProfileViewState extends State<ProfileView> {
                 children: [
                   const SizedBox(height: 20),
                   CircleAvatar(
-                    radius: 50,
+                    radius: 70,
                     backgroundImage: uploadedImageUrl != null
                         ? NetworkImage(
                             uploadedImageUrl!.contains('?')
@@ -87,29 +87,38 @@ class _ProfileViewState extends State<ProfileView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            final result = await context.push('/editProfile');
-                            if (result != null && result is String) {
-                              setState(() {
-                                uploadedImageUrl = result;
-                              });
-                              _cubit
-                                  .fetchUserProfile(); // ممكن تسيبيه لو عايزة تحدث باقي البيانات
-                            }
-                          },
-                          icon: const Icon(Icons.edit),
-                          label: Text(AppLocalizations.of(context).edit),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            context.push('/login');
-                          },
-                          icon: const Icon(Icons.logout),
-                          label: Text(AppLocalizations.of(context).logOut),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red),
-                        ),
+                       ElevatedButton.icon(
+  onPressed: () async {
+    final result = await context.push('/editProfile');
+    if (result != null && result is String) {
+      setState(() {
+        uploadedImageUrl = result;
+      });
+      _cubit.fetchUserProfile();
+    }
+  },
+  icon: const Icon(Icons.edit, size: 28), // تكبير الأيقونة
+  label: Text(
+    AppLocalizations.of(context).edit,
+    style: const TextStyle(fontSize: 18), // تكبير الخط
+  ),
+),
+
+ElevatedButton.icon(
+  onPressed: () {
+    context.push('/login');
+  },
+  icon: const Icon(Icons.logout, color: Colors.white, size: 28), // تكبير الأيقونة
+  label: Text(
+    AppLocalizations.of(context).logOut,
+    style: const TextStyle(color: Colors.white, fontSize: 18), // تكبير الخط
+  ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFF1B4965),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+  ),
+),
+
                       ],
                     ),
                   ),
@@ -126,7 +135,6 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 }
-
 class ProfileItem extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -143,20 +151,26 @@ class ProfileItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.all(20), // زيادة المسافة الداخلية
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(icon),
-            const SizedBox(width: 10),
+            Icon(icon, size: 30), // تكبير الأيقونة
+            const SizedBox(width: 16),
             Expanded(
-              child: Text(text, style: const TextStyle(fontSize: 16)),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 18, // تكبير الخط
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
