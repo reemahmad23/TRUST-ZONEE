@@ -126,6 +126,9 @@ class AppLocalizations {
       'enterUsernameToChat': 'Enter the username to chat with',
       'noConversation': 'No Conversation',
       'noResultFound': 'No result found',
+      'workingHours': 'Working Hours',
+      'features': 'Features',
+
 
 
     },
@@ -238,6 +241,8 @@ class AppLocalizations {
       'enterUsernameToChat': 'أدخل اسم المستخدم للدردشة معه',
       'noConversation': 'لا توجد محادثات',
       'noResultFound': 'لم يتم العثور على نتائج',
+      'workingHours': 'ساعات العمل',
+      'features': 'الميزات',
 
     },
   };
@@ -355,6 +360,8 @@ class AppLocalizations {
   String get enterUsernameToChat => getText('enterUsernameToChat');
   String get noConversation => getText('noConversation');
   String get noResultFound => getText('noResultFound');
+  String get workingHours => getText('workingHours');
+  String get features => getText('features');
 
 
 }

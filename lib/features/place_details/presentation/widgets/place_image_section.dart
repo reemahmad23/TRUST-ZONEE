@@ -146,6 +146,47 @@ class PlaceImageSection extends StatelessWidget {
                               onCopy: () => _copyToClipboard(context, branch.website),
                               onOpen: () => _launchUrl(branch.website),
                             ),
+                            const Divider(),
+
+                            // ✅ Opening hours
+                            _infoRow(
+                              context: context,
+                              icon: Icons.access_time,
+                              label: AppLocalizations.of(context).workingHours,
+                              value: "${branch.openingTime} - ${branch.closingTime}",
+                              onCopy: () => _copyToClipboard(
+                                context,
+                                "${branch.openingTime} - ${branch.closingTime}",
+                              ),
+                            ),
+                            const Divider(),
+
+                            // ✅ Feature names
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(Icons.check_circle, color: Colors.teal),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context).features,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      ...branch.featureNames.map(
+                                            (feature) => Text(
+                                          "• $feature",
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                         actions: [
