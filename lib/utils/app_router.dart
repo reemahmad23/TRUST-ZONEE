@@ -13,7 +13,7 @@ import 'package:trust_zone/utils/shared_data.dart' as SharedData;
 import '../features/auth/presentation/cubit/auth_cubit.dart';
 import '../features/chat/chat/presentation/managerr/conversation_cubit/conversatoin_cubit.dart';
 import '../features/chat/chat/presentation/managerr/message_cubit/message_cubit.dart';
-import '../features/chat/chat/presentation/views/chat_with_user.dart';
+import '../features/chat/chat/presentation/views/conversations.dart';
 import '../features/chat/chat/presentation/views/chats_view.dart';
 import '../features/events/presentation/cubit/event_cubit.dart';
 import '../features/home/home/presentation/manager/branch_cubit/branch_cubit.dart';
@@ -101,18 +101,6 @@ abstract class AppRouter {
         ),
       ),
 
-
-
-
-
-      // GoRoute(
-      //   path: '/branch-details',
-      //   builder: (context, state) {
-      //     final branch = state.extra as BranchModel;
-      //     return PlaceMapScreen(branch: branch);
-      //   },
-      // ),
-
       GoRoute(
         path: '/favorites',
         builder: (context, state) => BlocProvider(
@@ -132,6 +120,7 @@ abstract class AppRouter {
         path: '/randoUser1Page',
         builder: (context, state) => RandomUser1Page(userId: userId),
       ),
+      
       GoRoute(
         path: '/helpCenter',
         builder: (context, state) => const HelpCenterView(),
@@ -166,10 +155,20 @@ abstract class AppRouter {
         conversationId: extra['conversationId'],
         receiverId: extra['receiverId'],
         receiverName: extra['receiverName'],
+                receiverProfilePicture: extra['receiverProfilePicture'],
+
       ),
     );
   },
 ),
+     GoRoute(
+  path: '/chat-list-screen',
+  builder: (context, state) => BlocProvider(
+    create: (_) => di.sl<ConversationCubit>(), // sl هو GetIt.instance
+    child: const ChatListScreen(),
+  ),
+),
+
 
     ],
 
@@ -178,4 +177,6 @@ abstract class AppRouter {
       body: Center(child: Text("No Route Found")),
     ),
   );
+
+  
 }

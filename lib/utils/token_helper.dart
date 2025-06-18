@@ -27,10 +27,11 @@ class TokenHelper {
       final payload = base64.normalize(parts[1]);
       final decoded = utf8.decode(base64Url.decode(payload));
       final payloadMap = jsonDecode(decoded);
+      //print("Decoded Payload: $payloadMap");
 
       return payloadMap['Uid'] as String?; // 👈 ده هو الـ User ID
     } catch (e) {
-      print("Token decode error: $e");
+     // print("Token decode error: $e");
       return null;
     }
   }

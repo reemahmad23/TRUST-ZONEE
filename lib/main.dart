@@ -8,6 +8,7 @@ import 'package:trust_zone/features/random_user1/presentation/cubit/user_profile
 import 'package:trust_zone/features/random_user1/presentation/page/random_user1_page.dart';
 import 'package:trust_zone/utils/app_router.dart';
 import 'package:trust_zone/utils/shared_data.dart';
+import 'package:trust_zone/utils/token_helper.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_cubit.dart';
 import 'features/place_details/presentation/cubit/place_details_cubit.dart';
@@ -18,13 +19,12 @@ import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/place_details/presentation/cubit/review_cubit.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
 
-  final prefs = await SharedPreferences.getInstance();
- // await prefs.setString('token',  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnZWhhZG1vIiwianRpIjoiNzc2MmIxZjItMmVlMC00ZDcxLTgwMzQtNjM5ZTRiZTc5YTk2IiwiVWlkIjoiMzM1MDAzNDktODg5ZC00OGQ0LWE1ZjAtMmUwYjg0YWNmYjA5IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIzMzUwMDM0OS04ODlkLTQ4ZDQtYTVmMC0yZTBiODRhY2ZiMDkiLCJyb2xlcyI6IlVzZXIiLCJleHAiOjE3NDk0ODY4ODMsImlzcyI6IlRydXN0Wm9uZSIsImF1ZCI6IlRydXN0Wm9uZVVzZXIifQ.at6YgfIIv6fdrLx3-qKDwofix4ouX7kcbebzHkzeEKo");
   WidgetsFlutterBinding.ensureInitialized();
   DioHelper.init();
-  di.init();
+final currentUserId = await TokenHelper.getUserId(); // ✅ صح كده
+
+  di.init(currentUserId: currentUserId ?? '');
   runApp(
     DevicePreview(
       enabled: true,

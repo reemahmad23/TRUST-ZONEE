@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trust_zone/features/chat/chat/data/data_souce/conversation_remote_data_source.dart';
+import 'package:trust_zone/features/chat/chat/data/repos/conversation_repo_im.dart';
 import 'package:trust_zone/features/chat/chat/data/repos/message_repo_im.dart';
+import 'package:trust_zone/features/chat/chat/domain/repos/conversation_repo.dart';
 import 'package:trust_zone/features/chat/chat/domain/repos/message_repo.dart';
-import 'package:trust_zone/features/chat/chat/domain/repos/messages_repo.dart';
+import 'package:trust_zone/features/chat/chat/domain/usecases/get_conversation_usecase.dart';
 import 'package:trust_zone/features/chat/chat/domain/usecases/get_messages.dart';
 import 'package:trust_zone/features/chat/chat/domain/usecases/send_messages.dart';
+import 'package:trust_zone/features/chat/chat/presentation/managerr/conversation_cubit/conversatoin_cubit.dart';
 import 'package:trust_zone/features/chat/chat/presentation/managerr/message_cubit/message_cubit.dart';
 import 'package:trust_zone/features/random_user1/data/datasource/user_profile_remote_data_source.dart';
 import 'package:trust_zone/features/random_user1/data/datasource/user_profile_remote_data_source_impl.dart';
@@ -14,9 +18,9 @@ import 'package:trust_zone/features/random_user1/domain/repositories/user_profil
 import 'package:trust_zone/features/random_user1/domain/usecase/get_user_profile.dart';
 import 'package:trust_zone/features/random_user1/presentation/cubit/user_profile_cubit.dart';
 import 'package:trust_zone/utils/chat_service.dart';
+import 'package:trust_zone/utils/conversations_api_service.dart';
 import 'package:trust_zone/utils/fav_api_service.dart';
 import 'package:trust_zone/utils/profile_api_service.dart';
-import 'package:trust_zone/utils/token_helper.dart';
 
 import 'features/auth/data/datasource/auth_remote_datasource.dart';
 import 'features/auth/data/datasource/auth_remote_datasource_impl.dart';
@@ -68,9 +72,7 @@ import 'features/place_details/presentation/cubit/review_cubit.dart';
 
 final sl = GetIt.instance;
 
-Future<void> init() async {
-final prefs = await SharedPreferences.getInstance();
-final token = prefs.getString('token');
+Future<void> init({required String currentUserId}) async {
   // Dio
   sl.registerLazySingleton<Dio>(() => Dio());
 
@@ -203,7 +205,19 @@ final token = prefs.getString('token');
   sl.registerFactory(() => ChatCubit(sl(), sl()));
 
 
-  
+  sl.registerLazySingleton(() => ConversationApiService(sl()));
 
+  // RemoteDataSource
+  sl.registerLazySingleton(() => ConversationRemoteDataSource(sl(), currentUserId));
 
+  // Repository
+  sl.registerLazySingleton<ConversationRepository>(() => ConversationRepositoryImpl(sl()));
+
+  // UseCase
+  sl.registerLazySingleton(() => GetConversationsUseCase(sl()));
+
+  // Cubit
+  sl.registerFactory(() => ConversationCubit(sl()));
 }
+
+

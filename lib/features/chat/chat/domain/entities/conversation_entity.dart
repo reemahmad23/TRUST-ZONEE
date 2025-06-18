@@ -1,17 +1,17 @@
 class ConversationEntity {
   final int id;
-  final String user1Id;
-  final String user2Id;
-  final DateTime createdAt;
-  final String user1Name;
-  final String user2Name;
+  final String lastMessageContent;
+  final DateTime lastMessageAt;
+  final String userName;
+  final String? profilePicture;
+  final String receiverId; // ✅ أضفناه هنا
 
   ConversationEntity({
     required this.id,
-    required this.user1Id,
-    required this.user2Id,
-    required this.createdAt,
-    required this.user1Name,
-    required this.user2Name,
+    required this.lastMessageContent,
+    required this.lastMessageAt,
+    required this.userName,
+    this.profilePicture,
+    required this.receiverId, // ✅ ضيفي هنا كمان
   });
 }

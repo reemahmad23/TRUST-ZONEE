@@ -59,9 +59,15 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBar(
-        actions:  [
-          SizedBox(width: 10),
-        ],
+        actions: [
+        IconButton(
+      icon: const Icon(Icons.chat_bubble_outline),
+      onPressed: () {
+        context.push('/chat-list-screen'); // عدلي المسار حسب اسم شاشة الشات عندك
+      },
+    ),
+    const SizedBox(width: 10),
+  ],
       ),
       body: Column(
         children: [

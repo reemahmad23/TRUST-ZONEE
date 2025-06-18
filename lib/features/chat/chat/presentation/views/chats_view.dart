@@ -11,13 +11,13 @@ class ChatScreen extends StatefulWidget {
   final int conversationId;
   final String receiverId;
   final String receiverName;
-  final String receiverProfilePicture; // <<< Add this to receive image
+  final String receiverProfilePicture;
 
   const ChatScreen({
     required this.conversationId,
     required this.receiverId,
     required this.receiverName,
-    this.receiverProfilePicture = 'https://placehold.co/100x100', // fallback if not provided
+    this.receiverProfilePicture = 'https://placehold.co/100x100',
   });
 
   @override
@@ -26,12 +26,17 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
+  late ChatCubit chatCubit;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    chatCubit = context.read<ChatCubit>(); // حفظ المرجع هنا
+  }
 
   @override
   void initState() {
     super.initState();
-      print("Conversation ID: ${widget.conversationId}");
-
     Future.microtask(() {
       context.read<ChatCubit>().startPolling(widget.conversationId);
     });
@@ -39,15 +44,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    context.read<ChatCubit>().stopPolling();
+    chatCubit.stopPolling(); // استخدام المرجع بأمان
     super.dispose();
   }
 
   void _sendMessage() async {
     final content = _controller.text.trim();
     if (content.isNotEmpty) {
-      await context.read<ChatCubit>().sendNewMessage(content, widget.receiverId,   widget.conversationId, // <<< أضفها هنا
-);
+      await chatCubit.sendNewMessage(content, widget.receiverId, widget.conversationId);
       _controller.clear();
     }
   }
@@ -60,6 +64,11 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: CachedNetworkImageProvider(widget.receiverProfilePicture),
+            ),
+            const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -124,7 +133,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                       child: Text(
                                         msg.content,
                                         style: TextStyle(
-                                          color: isMe ? Colors.black : Colors.white, fontSize: 18,),
+                                          color: isMe ? Colors.black : Colors.white,
+                                          fontSize: 18,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(height: 4),
