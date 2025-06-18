@@ -84,7 +84,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Image.asset(
-                                        "assets/images/images.png",
+                                        "assets/images/profile1.jpg",
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
@@ -92,7 +92,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     },
                                   )
                                 : Image.asset(
-                                    "assets/images/images.png",
+                                    "assets/images/profile1.jpg",
                                     width: 60,
                                     height: 60,
                                     fit: BoxFit.cover,
